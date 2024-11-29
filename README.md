@@ -10,9 +10,11 @@ Rava Protocol is a web application that allows researchers and scientists to sto
 
 - **Protocol Database**: Searchable repository of scientific protocols
 - **User Authentication**: Secure login and user management system
-- **News Feed**: Front page featuring latest updates and interesting articles
-- **Advanced Search**: Powerful search functionality with filters
 - **User Profiles**: Administrative management and user settings
+- **Protocol Writer**: Tool to Create Protocol from Researcher Inputs
+- **Admin Tools**: Review protocol and manage personel
+- **Messaging**: Researchers and Admin can message each other to enable protocol and review
+- **User Management**: Admin can create/ update lab rosters and see protocol for users
 
 ## Tech Stack
 
