@@ -1,66 +1,84 @@
-# Rava Protocol
+# RAVA Protocol
 
-A searchable scientific protocol database platform built with Django and React.
-
-## Overview
-
-Rava Protocol is a web application that allows researchers and scientists to store, search, and share scientific protocols. The platform features a robust Django backend API and a modern React frontend interface.
+A OLAW Protocol management system for University appointed 
 
 ## Features
 
-- **Protocol Database**: Searchable repository of scientific protocols
-- **User Authentication**: Secure login and user management system
-- **User Profiles**: Administrative management and user settings
-- **Protocol Writer**: Tool to Create Protocol from Researcher Inputs
-- **Admin Tools**: Review protocol and manage personel
-- **Messaging**: Researchers and Admin can message each other to enable protocol and review
-- **User Management**: Admin can create/ update lab rosters and see protocol for users
+- User Authentication with JWT tokens
+- Role-based access (Admin/Researcher)
+- Laboratory Management
+- Protocol Management
+- School Management
+- User Management
+- Search Functionality
 
-## Tech Stack
+## Prerequisites
 
-### Backend
-- Django
-- Django REST Framework
-- PostgreSQL
-- Python 3.x
+- Python 3.8+
+- Node.js 14+
+- npm 6+
+- PostgreSQL (future use- currently using SQLite for development)
 
-### Frontend
-- React
-- React Router
-- Material UI/Tailwind CSS
-- Axios
+## Backend Setup
+
+1. Create and activate virtual environment:
+
+```bash
+python -m v
+```
+
+2. Install dependencies:
+
+bash
+pip install -r requirements.txt
+
+3. Create `.env` file in backend
+
+DEBUG=True
+SECRET_KEY=your-secret-key
+ALLOWED_HOSTS=localhost,127.0.0.1
+CORS_ALLOWED_ORIGINS=http://localhost:3000
+
+4. Run migrations:
+bash
+cd backend
+python manage.py migrate
+
+5. Create superuser:
+bash python manage.py createsuperuser
+
+6. Start development server:
+bash python manage.py runserver
+
+
+
+## Frontend Setup
+
+1. Install dependencies:
+cd frontend
+npm install
+
+2. Start development server:
+bash
+npm start
 
 ## Project Structure
 
-
-
-## Pages
-
-1. **Login Page**
-   - User authentication
-   - Registration
-   - Password recovery
-
-2. **Home Page**
-   - News feed
-   - Featured protocols
-   - Latest articles
-   - Quick search
-
-3. **Search Results Page**
-   - Advanced filtering
-   - Sort options
-   - Protocol previews
-   - Export functionality
-
-4. **User Profile Page**
-   - User management
-   - Admin controls
-   - Personal settings
-   - Saved protocols
-
-## Setup
-
-### Backend Setup
-
+rava_protocol/
+├── backend/
+│ ├── core/ # Django settings
+│ ├── search/ # protocol db/ search
+│ ├── users/ # User management
+│ └── manage.py
+├── frontend/
+│ ├── src/
+│ │ ├── components/
+│ │ │ ├── layout/ # Layout components
+│ │ │ └── pages/ # Page components
+│ │ ├── context/ # React context
+│ │ ├── utils/ # Utility functions
+│ │ └── App.js
+│ └── package.json
+├── requirements.txt
+└── README.md
 

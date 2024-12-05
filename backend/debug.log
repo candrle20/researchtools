@@ -1,0 +1,5 @@
+INFO 2024-11-30 23:54:44,591 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 23:57:17,937 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 23:58:23,837 autoreload /Users/conorandrle/Documents/Coding/PythonProjects/rava_protocol/backend/users/views.py changed, reloading.
+INFO 2024-11-30 23:58:24,158 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 23:58:25,302 autoreload /Users/conorandrle/Documents/Coding/PythonProjects/rava_protocol/backend/core/settings.py changed, reloading.

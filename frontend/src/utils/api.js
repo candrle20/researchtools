@@ -1,35 +1,30 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000/api',
+// Create a separate instance for token refresh to avoid circular dependencies
+const refreshApi = axios.create({
+  baseURL: '/api',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Add auth token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+const api = axios.create({
+  baseURL: '/api',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
   },
-  (error) => {
-    return Promise.reject(error);
+});
+
+// Custom event for auth state changes
+export const authEvents = {
+  onTokenRefreshed: (tokens) => {
+    window.dispatchEvent(new CustomEvent('tokenRefreshed', { detail: tokens }));
+  },
+  onAuthError: () => {
+    window.dispatchEvent(new CustomEvent('authError'));
   }
-);
-
-let isRefreshing = false;
-let failedQueue = [];
-
-const processQueue = (error, token = null) => {
-  failedQueue.forEach(prom => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
-  failedQueue = [];
 };
 
 // Handle response errors
@@ -38,49 +33,32 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Handle 401 Unauthorized errors
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then(token => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return api(originalRequest);
-          })
-          .catch(err => Promise.reject(err));
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!refreshToken) {
-          throw new Error('No refresh token');
+      
+      const refreshToken = localStorage.getItem('refresh_token');
+      if (refreshToken) {
+        try {
+          const response = await refreshApi.post('/token/refresh/', {
+            refresh: refreshToken
+          });
+          
+          const { tokens } = response.data;
+          localStorage.setItem('access_token', tokens.access);
+          
+          // Notify about token refresh
+          authEvents.onTokenRefreshed(tokens);
+          
+          originalRequest.headers.Authorization = `Bearer ${tokens.access}`;
+          return api(originalRequest);
+        } catch (refreshError) {
+          // If refresh fails, notify about auth error
+          authEvents.onAuthError();
+          return Promise.reject(refreshError);
         }
-
-        const response = await axios.post(
-          `${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/token/refresh/`,
-          { refresh: refreshToken }
-        );
-
-        const { access } = response.data;
-        localStorage.setItem('token', access);
-        api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-        originalRequest.headers.Authorization = `Bearer ${access}`;
-
-        processQueue(null, access);
-        return api(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError, null);
-        localStorage.clear();
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
       }
     }
-
     return Promise.reject(error);
   }
 );

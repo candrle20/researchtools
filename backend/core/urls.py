@@ -20,33 +20,41 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from search.views import (
-    ResearcherViewSet, 
-    ProtocolViewSet, 
+    ProtocolViewSet,
     ProtocolReviewViewSet,
-    get_user_info,
-    CustomTokenObtainPairView,
-    register_researcher,
-    SchoolViewSet,
-    LaboratoryViewSet,
     ProtocolStandardViewSet,
-    LabJoinRequestViewSet
+    get_user_info,
+)
+from users.views import (
+    CustomUserViewSet,
+    SchoolViewSet,
+    LabViewSet,
+    LabMembershipViewSet,
+    InstitutionViewSet,
+    CustomTokenObtainPairView,
+    UserTokenObtainPairView
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
 router = DefaultRouter()
-router.register(r'researchers', ResearcherViewSet, basename='researcher')
+
+# Users app endpoints
+router.register(r'users', CustomUserViewSet, basename='user')
+router.register(r'schools', SchoolViewSet, basename='school')
+router.register(r'labs', LabViewSet, basename='lab')
+router.register(r'lab-memberships', LabMembershipViewSet, basename='lab-membership')
+router.register(r'institutions', InstitutionViewSet, basename='institution')
+
+# Search app endpoints
 router.register(r'protocols', ProtocolViewSet, basename='protocol')
 router.register(r'reviews', ProtocolReviewViewSet, basename='review')
-router.register(r'schools', SchoolViewSet, basename='school')
-router.register(r'laboratories', LaboratoryViewSet, basename='laboratory')
 router.register(r'standards', ProtocolStandardViewSet, basename='standard')
-router.register(r'lab-requests', LabJoinRequestViewSet, basename='lab-request')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', UserTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/developer/', CustomTokenObtainPairView.as_view(), name='developer_token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/user/', get_user_info, name='user_info'),
-    path('api/register/researcher/', register_researcher, name='register_researcher'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
