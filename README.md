@@ -62,6 +62,10 @@ npm install
 bash
 npm start
 
+## Login
+1. Create a superuser and log into developer portal: localhost:3000/developer/login
+2. Make accounts for researcher and admin on developer portal to login to researcher and admin portal at localhost:3000/login
+
 ## Project Structure
 
 rava_protocol/
